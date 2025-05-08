@@ -10,6 +10,14 @@ import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+import {Depilaser} from "./component/depiLaser";
+import {PerfiladoPestañas} from "./component/pestañas";
+// import {Hifu} from "./component/hifu";
+// import {Criolipolisis} from "./component/criolipolisis";
+// import {Cejas} from "./component/cejas";
+// import {Masajes} from "./component/masajes";
+// import {Reductores} from "./component/reductores";
+// import {Cuponeras} from "./component/cuponeras";    
 
 //create your first component
 const Layout = () => {
@@ -28,6 +36,14 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
+                        <Route element={<Depilaser />} path="/depiLaser" />
+                        <Route element={<PerfiladoPestañas />} path="/pestañas" />   
+                        {/* <Route element={<Hifu />} path="/hifu" /> */}
+                        {/* <Route element={<Criolipolisis />} path="/criolipolisis" /> */}
+                        {/* <Route element={<Cejas />} path="/cejas" /> */}
+                        {/* <Route element={<Masajes />} path="/masajes" /> */}
+                        {/* <Route element={<Reductores />} path="/reductores" /> */}
+                        {/* <Route element={<Cuponeras />} path="/cuponeras" /> */}     
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

@@ -1,0 +1,29 @@
+.navbar{
+    background-color: #ffa8d9;
+    color: white;
+}
+
+.navbar-logo {
+    height: 30px; 
+    margin-right: 10px; 
+margin-bottom: 7px;
+  }
+  
+.navbar-toggler {
+	border: none;
+	background-color: transparent;
+}
+
+.navbar-toggler{
+   color: #ffa8d9;
+}
+
+.nav-link {
+    color: #000; 
+    transition: color 0.3s ease, background-color 0.3s ease; 
+  }
+  
+  .nav-link:hover {
+    color: #fff; 
+  }
+  
