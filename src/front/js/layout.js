@@ -19,6 +19,9 @@ import {MasajesDescontracturantes} from "./component/masajes";
 import {Reductores} from "./component/reductores";
 import {Cuponeras} from "./component/cuponeras";    
 
+import {Calendario} from './component/calendario'; 
+
+
 //create your first component
 const Layout = () => {
     //the basename is used when your project is published in a subdirectory and not in the root of the domain
@@ -44,6 +47,7 @@ const Layout = () => {
                         <Route element={<MasajesDescontracturantes />} path="/masajes" />
                         <Route element={<Reductores />} path="/reductores" />
                         <Route element={<Cuponeras />} path="/cuponeras" />      
+                        <Route element={<Calendario />} path="/calendario" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

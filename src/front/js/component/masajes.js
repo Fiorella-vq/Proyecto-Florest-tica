@@ -1,8 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/services.css";
 import MasajesImage from "../../img/descontracturantes.jpg";
 
 export const MasajesDescontracturantes = () => {
+  const navigate = useNavigate();
+  
+    const handleButtonClick = () => {
+      navigate("/calendario", { state: { from: "Masajes Descontracturantes" } });
+    };
   return (
     <div className="card2">
       <div className="image-container">
@@ -55,7 +61,7 @@ export const MasajesDescontracturantes = () => {
       <div className="btn-container">
         <button
           className="btn"
-          //   onClick={handleButtonClick}  // Llama a la función handleButtonClick cuando se hace clic
+      onClick={handleButtonClick} 
         >
           Agendate!
         </button>

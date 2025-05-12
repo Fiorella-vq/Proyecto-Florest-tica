@@ -1,8 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/services.css";
 import HifuImage from "../../img/hifu.jpg";
 
 export const Hifu = () => {
+  const navigate = useNavigate();
+  
+    const handleButtonClick = () => {
+      navigate("/calendario", { state: { from: "HIFU" } });
+    };
   return (
     <div className="card2">
       <div className="image-container">
@@ -48,7 +54,7 @@ export const Hifu = () => {
       <div className="btn-container">
         <button
           className="btn"
-          //   onClick={handleButtonClick}  // Llama a la función handleButtonClick cuando se hace clic
+            onClick={handleButtonClick}
         >
           Agendate!
         </button>

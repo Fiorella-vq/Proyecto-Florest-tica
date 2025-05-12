@@ -1,0 +1,100 @@
+.calendario-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 800px; 
+  background-color: #fff;
+  border-radius: 8px;
+  border-color: #ffa8d9;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.react-calendar {
+  border: none;
+  border-radius: 8px;
+}
+
+.react-calendar__tile {
+  border-radius: 8px;
+}
+
+
+.react-calendar__tile--active {
+  background-color: #ffa8d9 !important; 
+  color: white;
+}
+
+
+p {
+  font-size: 18px;
+  color: #333;
+}
+
+
+.swal-container {
+  font-family: 'Arial', sans-serif;
+}
+
+.swal-title {
+  font-size: 1.5em;
+  color: #333;
+}
+
+.swal-confirm-btn {
+  background-color: #62a264;
+  color: white;
+  font-size: 1.1em;
+}
+
+.swal-deny-btn {
+  background-color: #ea8a83;
+  color: white;
+  font-size: 1.1em;
+}
+
+
+.hora-checkbox {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.hora-checkbox input {
+  margin-right: 8px;
+}
+
+.hora-checkbox label {
+  font-size: 1.1em;
+  color: #555;
+}
+
+
+.calendario-container {
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.calendario-container h2 {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+.calendario-container p {
+  font-size: 1.1em;
+  color: #666;
+}
+
+.horas-disponibles h3 {
+  font-size: 1.5em;
+  margin-top: 20px;
+  color: #333;
+}

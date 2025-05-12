@@ -1,8 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/services.css";
 import ReductoresImage from "../../img/reductores.jpg";
 
 export const Reductores = () => {
+  const navigate = useNavigate();
+  
+    const handleButtonClick = () => {
+      navigate("/calendario", { state: { from: "Tratamiento Reductor" } });
+    };
+
   return (
     <div className="card2">
       <div className="image-container">
@@ -10,7 +17,7 @@ export const Reductores = () => {
       </div>
       <div className="card-body">
         <h5 className="card-title2">
-          <u>Tratamiento Reductores</u>
+          <u>Tratamiento Reductor</u>
         </h5>
         <p>
           <strong>Descripción:</strong>Tratamientos para modelar el cuerpo,
@@ -45,7 +52,7 @@ export const Reductores = () => {
       <div className="btn-container">
         <button
           className="btn"
-          //   onClick={handleButtonClick}  // Llama a la función handleButtonClick cuando se hace clic
+         onClick={handleButtonClick}  
         >
           Agendate!
         </button>

@@ -1,8 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/services.css";
 import Pesta from "../../img/Pestañas.webp";
 
 export const PerfiladoPestanas = () => {
+  const navigate = useNavigate();
+  
+    const handleButtonClick = () => {
+      navigate("/calendario", { state: { from: "Perfilado de Pestañas" } });
+    };
   return (
     <div className="card2">
       <div className="image-container">
@@ -31,7 +37,7 @@ export const PerfiladoPestanas = () => {
       <div className="btn-container">
         <button
           className="btn"
-        //   onClick={handleButtonClick}  // Llama a la función handleButtonClick cuando se hace clic
+          onClick={handleButtonClick}  
         >
        Agendate!
         </button>

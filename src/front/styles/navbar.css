@@ -14,9 +14,12 @@ margin-bottom: 7px;
 	background-color: transparent;
 }
 
-.navbar-toggler{
-   color: #ffa8d9;
+
+.navbar-toggler-icon {
+  background-color: #fbf4f4;
+  border-radius: 5px; 
 }
+
 
 .nav-link {
     color: #000; 

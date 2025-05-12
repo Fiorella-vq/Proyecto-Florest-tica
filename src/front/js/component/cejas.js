@@ -1,8 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/services.css";
 import CejasImage from "../../img/cejas.jpg";
 
 export const PerfiladoCejas = () => {
+  const navigate = useNavigate();
+  
+    const handleButtonClick = () => {
+      navigate("/calendario", { state: { from: "Perfilado de Cejas" } });
+    };
   return (
     <div className="card2">
       <div className="image-container">
@@ -42,7 +48,7 @@ export const PerfiladoCejas = () => {
       <div className="btn-container">
         <button
           className="btn"
-          //   onClick={handleButtonClick}  // Llama a la función handleButtonClick cuando se hace clic
+            onClick={handleButtonClick}
         >
           Agendate!
         </button>

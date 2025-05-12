@@ -1,8 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/services.css";
 import CriolipolisisImage from "../../img/Criolipólisis.jpg";
 
 export const Criolipolisis = () => {
+  const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    navigate("/calendario", { state: { from: "Criolipolisis" } });
+  };
   return (
     <div className="card2">
       <div className="image-container">
@@ -40,15 +46,12 @@ export const Criolipolisis = () => {
           <strong>Resultados esperados:</strong> Reducción de grasa localizada y
           contorno corporal más definido.
         </p>
-         <p>
+        <p>
           <strong>Promoción:</strong> Sí.
         </p>
       </div>
       <div className="btn-container">
-        <button
-          className="btn"
-          //   onClick={handleButtonClick}  // Llama a la función handleButtonClick cuando se hace clic
-        >
+        <button className="btn" onClick={handleButtonClick}>
           Agendate!
         </button>
       </div>
