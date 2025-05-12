@@ -31,3 +31,21 @@
     margin-bottom: 15px;
     color: #ffa8d9;
 }
+
+.btn-container {
+  display: flex;
+  justify-content: center;  
+  align-items: center;     
+  margin-top: 20px;         
+}
+
+.btn {
+  background-color: #ffa8d9;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}

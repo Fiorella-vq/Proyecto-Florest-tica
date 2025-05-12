@@ -31,7 +31,7 @@ export const Home = () => {
 				</div>
 
 				<div className="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div className="card h-100" onClick={() => navigate("/pestañas")}>
+					<div className="card h-100" onClick={() => navigate("/pestanas")}>
 						<img src={PestañasImg} className="card-img-top service-img" alt="Pestañas" />
 						<div className="card-body">
 							<h5 className="card-title">Pestañas</h5>
@@ -40,7 +40,7 @@ export const Home = () => {
 				</div>
 
 				<div className="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div className="card h-100">
+					<div className="card h-100"onClick={() => navigate("/hifu")}>
 						<img src={HifuImg} className="card-img-top service-img" alt="HIFU" />
 						<div className="card-body">
 							<h5 className="card-title">HIFU</h5>
@@ -50,7 +50,7 @@ export const Home = () => {
 
 
 				<div className="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div className="card h-100">
+					<div className="card h-100"onClick={() => navigate("/criolipolisis")}>
 						<img src={CriolipolisisImg} className="card-img-top service-img" alt="Criolipólisis" />
 						<div className="card-body">
 							<h5 className="card-title">Criolipólisis</h5>
@@ -60,7 +60,7 @@ export const Home = () => {
 
 
 				<div className="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div className="card h-100">
+					<div className="card h-100"onClick={() => navigate("/cejas")}>
 						<img src={CejasImg} className="card-img-top service-img" alt="Perfilado de Cejas" />
 						<div className="card-body">
 							<h5 className="card-title">Perfilado de Cejas</h5>
@@ -70,7 +70,7 @@ export const Home = () => {
 
 
 				<div className="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div className="card h-100">
+					<div className="card h-100"onClick={() => navigate("/masajes")}>
 						<img src={MasajesImg} className="card-img-top service-img" alt="Masajes Descontracturantes" />
 						<div className="card-body">
 							<h5 className="card-title">Masajes Descontracturantes</h5>
@@ -80,7 +80,7 @@ export const Home = () => {
 
 
 				<div className="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div className="card h-100">
+					<div className="card h-100"onClick={() => navigate("/reductores")}>
 						<img src={ReductoresImg} className="card-img-top service-img" alt="Tratamientos Reductores" />
 						<div className="card-body">
 							<h5 className="card-title">Tratamientos Reductores</h5>
@@ -90,7 +90,7 @@ export const Home = () => {
 
 
 				<div className="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div className="card h-100">
+					<div className="card h-100"onClick={() => navigate("/cuponeras")}>
 						<img src={CuponerasImg} className="card-img-top service-img" alt="Cuponeras" />
 						<div className="card-body">
 							<h5 className="card-title">Cuponeras</h5>
