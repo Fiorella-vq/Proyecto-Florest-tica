@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/services.css";
-import Pesta from "../../img/Pestañas.webp";
+import PestañasImage from '../../img/pestanas.webp';
+
 
 export const PerfiladoPestanas = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export const PerfiladoPestanas = () => {
   return (
     <div className="card2">
       <div className="image-container">
-        <img src={Pesta} className="service-img2" alt="pestañas" />
+        <img src={PestañasImage} className="service-img2" alt="pestañas" />
       </div>
       <div className="card-body">
         <h5 className="card-title2">
