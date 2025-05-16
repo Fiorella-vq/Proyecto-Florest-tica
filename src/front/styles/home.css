@@ -19,3 +19,6 @@
     cursor: pointer; 
   }
   
+  body {
+    font-family: 'Segoe UI', sans-serif;
+}

@@ -1,22 +1,55 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
-from api.utils import generate_sitemap, APIException
-from flask_cors import CORS
+from flask import Blueprint, request, jsonify
+from twilio.rest import Client
+from models import db, Reserva
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  
 
 api = Blueprint('api', __name__)
 
-# Allow CORS requests to this API
-CORS(api)
+@api.route('/reservas', methods=['POST'])
+def crear_reserva():
+    data = request.get_json()
 
+    # Datos de la reserva
+    nombre = data.get('nombre')
+    telefono = data.get('telefono')
+    fecha = data.get('fecha')
+    hora = data.get('hora')
+    servicio = data.get('servicio')
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
+   
+    if not nombre or not telefono or not fecha or not hora or not servicio:
+        return jsonify({"message": "Todos los campos son requeridos"}), 400
 
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
+ 
+    reserva = Reserva(nombre=nombre, telefono=telefono, fecha=fecha, hora=hora, servicio=servicio)
+    db.session.add(reserva)
+    db.session.commit()
 
-    return jsonify(response_body), 200
+    # Enviar un mensaje de texto (puedes cambiar esto por un correo si prefieres)
+    enviar_sms(reserva)
+
+    return jsonify({"message": "Reserva creada con éxito", "reserva": reserva.serialize()}), 201
+
+# Función para enviar el mensaje de texto con la información de la reserva
+def enviar_sms(reserva):
+    try:
+        # Configura Twilio con las variables de entorno
+        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        from_number = os.getenv('TWILIO_PHONE_NUMBER')
+        client = Client(account_sid, auth_token)
+
+        # Número de teléfono del que se enviará el mensaje
+        to_number = reserva.telefono  # Número del usuario que hizo la reserva
+
+        # Mensaje de texto con la información de la reserva
+        mensaje = f"Reserva confirmada:\nServicio: {reserva.servicio}\nFecha: {reserva.fecha}\nHora: {reserva.hora}\nGracias por confiar en nosotros."
+
+        # Enviar el mensaje
+        client.messages.create(body=mensaje, from_=from_number, to=to_number)
+
+    except Exception as e:
+        print(f"Error al enviar SMS: {e}")
