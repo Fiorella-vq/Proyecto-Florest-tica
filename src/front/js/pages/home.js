@@ -3,7 +3,7 @@ import { Context } from "../store/appContext";
 import '../../styles/home.css';
 import { useNavigate } from "react-router-dom";
 import Depilaser from "../../img/depilaser.png";
-import PestañasImg from "../../img/Pestañas.webp";
+import PestañasImg from "../../img/pestanas.webp";
 import HifuImg from "../../img/hifu.jpg";
 import CriolipolisisImg from "../../img/Criolipólisis.jpg";
 import CejasImg from "../../img/cejas.jpg";
