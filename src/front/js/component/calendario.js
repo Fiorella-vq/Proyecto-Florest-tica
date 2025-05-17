@@ -4,12 +4,13 @@ import "react-calendar/dist/Calendar.css";
 import "../../styles/calendario.css";
 import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-import axios from "axios";
 
 export const Calendario = () => {
   const [fecha, setFecha] = useState(new Date());
   const [horasDisponibles, setHorasDisponibles] = useState([]);
-  const [numeroCliente, setNumeroCliente] = useState(""); 
+  const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [emailCliente, setEmailCliente] = useState("");
   const location = useLocation();
 
   const horas = [
@@ -17,70 +18,90 @@ export const Calendario = () => {
     "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
 
+ 
   const manejarFecha = (nuevaFecha) => {
     setFecha(nuevaFecha);
     const diaSeleccionado = nuevaFecha.getDate();
     if (diaSeleccionado % 2 === 0) {
-      setHorasDisponibles(horas.slice(0, 5)); 
+      setHorasDisponibles(horas.slice(0, 5));
     } else {
-      setHorasDisponibles(horas.slice(5));    
+      setHorasDisponibles(horas.slice(5));
     }
   };
 
-  const manejarCheckboxChange = async (e) => {
+  const manejarCheckboxChange = (e) => {
     const { value, checked } = e.target;
-    const origen = location.state?.from || "Servicio";
+    const servicio = location.state?.from || "Servicio";
 
     if (checked) {
-      if (!numeroCliente || numeroCliente.length < 10) {
-        Swal.fire("Por favor ingresá un número válido de WhatsApp.", "", "warning");
-        e.target.checked = false; 
+      if (!nombre.trim() || !telefono.trim() || !emailCliente.trim()) {
+        Swal.fire("Por favor completá nombre, teléfono y correo electrónico.", "", "warning");
+        e.target.checked = false;
         return;
       }
 
-     
-      let numeroFormateado = numeroCliente.replace(/\D/g, "");
-
-    
-      if (!numeroFormateado.startsWith("54")) {
-        numeroFormateado = "54" + numeroFormateado;
-      }
-
-      
-      if (numeroFormateado.length < 13) {
-        Swal.fire("El número ingresado no es válido. Debe tener al menos 11 dígitos.", "", "warning");
-        e.target.checked = false; 
+      if (!/\S+@\S+\.\S+/.test(emailCliente)) {
+        Swal.fire("Por favor ingresá un correo electrónico válido.", "", "warning");
+        e.target.checked = false;
         return;
       }
 
       Swal.fire({
-        title: `¿Confirmás tu turno a las ${value}?`,
+        title: `¿Confirmás tu turno para ${servicio} a las ${value}?`,
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonText: "Sí, confirmar",
         denyButtonText: "No",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          const mensaje = `¡Hola! Tu turno para *${origen}* fue confirmado para el *${fecha.toDateString()}* a las *${value}*. ¡Gracias por elegirnos!`;
-
           try {
-            // Llamada al backend para enviar el mensaje de WhatsApp
-            const response = await axios.post('http://localhost:3001/api/enviar-mensaje', {
-              numero: numeroFormateado,
-              mensaje: mensaje,
+            const crearResponse = await fetch("http://localhost:3001/api/reservas", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                fecha: fecha.toISOString().slice(0, 10),
+                hora: value,
+                nombre,
+                telefono,
+                email: emailCliente,
+                servicio
+              }),
             });
-            
-            if (response.status === 200) {
-              Swal.fire("¡Turno confirmado!", "Tu mensaje ha sido enviado con éxito.", "success");
+
+            if (!crearResponse.ok) {
+              const errorData = await crearResponse.json();
+              throw new Error(errorData.error || "No se pudo crear la reserva");
+            }
+
+            const data = await crearResponse.json();
+            const token = data.reserva.token;
+
+            const mensaje = `¡Hola ${nombre}! Tu turno para *${servicio}* fue confirmado para el *${fecha.toDateString()}* a las *${value}*.\n\n
+Si querés cancelar tu reserva, hacé clic acá: http://localhost:3000/cancelar/${token}\n\n
+¡Gracias por elegirnos!`;
+
+            const emailResponse = await fetch("http://localhost:3001/api/enviar-email", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: emailCliente,
+                asunto: `Confirmación de turno para ${servicio}`,
+                mensaje: mensaje,
+              }),
+            });
+
+            if (emailResponse.ok) {
+              Swal.fire("¡Turno confirmado!", "El correo fue enviado con éxito.", "success");
+             
             } else {
-              Swal.fire("Error", "No se pudo enviar el mensaje", "error");
+              Swal.fire("Error", "No se pudo enviar el correo", "error");
             }
           } catch (error) {
-            Swal.fire("Error", "Hubo un problema al enviar el mensaje", "error");
+            Swal.fire("Error", error.message, "error");
           }
         } else if (result.isDenied) {
           Swal.fire("Reserva cancelada", "", "info");
-          e.target.checked = false; 
+          e.target.checked = false;
         }
       });
     }
@@ -92,13 +113,29 @@ export const Calendario = () => {
       <Calendar onChange={manejarFecha} value={fecha} />
       <p>Fecha seleccionada: {fecha.toDateString()}</p>
 
-      <div className="numero-whatsapp">
-        <label>Tu número de WhatsApp:</label>
+      <div className="datos-cliente">
+        <label>Nombre:</label>
+        <input
+          type="text"
+          placeholder="Tu nombre"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+        />
+
+        <label>Teléfono:</label>
         <input
           type="tel"
-          placeholder="Ej: +9898111226"
-          value={numeroCliente}
-          onChange={(e) => setNumeroCliente(e.target.value)}
+          placeholder="Tu teléfono"
+          value={telefono}
+          onChange={(e) => setTelefono(e.target.value)}
+        />
+
+        <label>Correo electrónico:</label>
+        <input
+          type="email"
+          placeholder="Ej: usuario@ejemplo.com"
+          value={emailCliente}
+          onChange={(e) => setEmailCliente(e.target.value)}
         />
       </div>
 

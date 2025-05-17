@@ -76,6 +76,7 @@
 		"axios": "^1.9.0",
 		"body-parser": "^2.2.0",
 		"bootstrap": "^5.3.6",
+		"date-fns": "^4.1.0",
 		"express": "^5.1.0",
 		"prop-types": "^15.6.1",
 		"react": "^19.1.0",

@@ -17,9 +17,11 @@ import {Criolipolisis} from "./component/criolipolisis";
 import {PerfiladoCejas} from "./component/cejas";
 import {MasajesDescontracturantes} from "./component/masajes";
 import {Reductores} from "./component/reductores";
-import {Cuponeras} from "./component/cuponeras";    
-
+import {Cuponeras} from "./component/cuponeras";   
 import {Calendario} from './component/calendario'; 
+
+
+
 
 
 //create your first component

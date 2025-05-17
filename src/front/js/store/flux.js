@@ -1,54 +1,90 @@
 const getState = ({ getStore, getActions, setStore }) => {
-	return {
-		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
-		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
+    const getToken = () => localStorage.getItem("access_token");
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+    return {
+        store: {
+            message: null,
+            reservations: [],
+            demo: [
+                { title: "FIRST", background: "white", initial: "white" },
+                { title: "SECOND", background: "white", initial: "white" }
+            ]
+        },
+        actions: {
+            exampleFunction: () => {
+                getActions().changeColor(0, "green");
+            },
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+            getReservations: async () => {
+                try {
+                    const token = getToken();
+                    const response = await fetch(process.env.BACKEND_URL + "/reservas", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + token
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ reservations: data });
+                        return data;
+                    } else {
+                        console.error("Error al obtener las reservas:", response.status);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error("Error al obtener las reservas:", error);
+                    return false;
+                }
+            },
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
-	};
+            deleteReservation: async (id) => {
+                try {
+                    const token = getToken();
+                    const response = await fetch(process.env.BACKEND_URL + "/reservas", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + token
+                        },
+                        body: JSON.stringify({ reserva_id: id })
+                    });
+                    if (response.ok) {
+                        console.log("Reserva borrada exitosamente");
+                        return true;
+                    } else {
+                        console.error("Error al borrar la reserva:", response.statusText);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error("Error al borrar la reserva:", error);
+                    return false;
+                }
+            },
+
+            submitReservations: async (selectedReservations) => {
+                try {
+                    const token = getToken();
+                    const response = await fetch(process.env.BACKEND_URL + "/reservas", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + token
+                        },
+                        body: JSON.stringify(selectedReservations)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Error al guardar las reservas: ${response.statusText}`);
+                    }
+                    return true;
+                } catch (error) {
+                    console.log("Error al guardar las reservas:", error);
+                    return false;
+                }
+            }
+        }
+    };
 };
 
 export default getState;
