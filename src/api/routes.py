@@ -187,3 +187,27 @@ def cancelar_reserva(token):
         db.session.rollback()
         current_app.logger.error(f"Error cancelando reserva: {str(e)}")
         return jsonify({'error': f'Error cancelando reserva: {str(e)}'}), 500
+
+
+
+SECRET_ADMIN_KEY = "florencia"
+
+@api.route('/admin/reservas', methods=['GET'])
+def admin_obtener_reservas():
+    key = request.headers.get('x-admin-key')
+    if key != SECRET_ADMIN_KEY:
+        return jsonify({'error': 'Acceso denegado'}), 403
+
+    reservas = Reserva.query.filter_by(cancelada=False).all()
+    resultado = [{
+        'id': r.id,
+        'nombre': r.nombre,
+        'telefono': r.telefono,
+        'email': r.email,
+        'fecha': r.fecha.isoformat(),
+        'hora': r.hora,
+        'servicio': r.servicio,
+        'token': r.token
+    } for r in reservas]
+
+    return jsonify({'reservas': resultado}), 200

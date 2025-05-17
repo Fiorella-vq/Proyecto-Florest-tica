@@ -10,27 +10,21 @@ import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
-import {Depilaser} from "./component/depiLaser";
-import {PerfiladoPestanas} from "./component/pestanas";
-import {Hifu} from "./component/hifu";
-import {Criolipolisis} from "./component/criolipolisis";
-import {PerfiladoCejas} from "./component/cejas";
-import {MasajesDescontracturantes} from "./component/masajes";
-import {Reductores} from "./component/reductores";
-import {Cuponeras} from "./component/cuponeras";   
-import {Calendario} from './component/calendario'; 
+import { Depilaser } from "./component/depiLaser";
+import { PerfiladoPestanas } from "./component/pestanas";
+import { Hifu } from "./component/hifu";
+import { Criolipolisis } from "./component/criolipolisis";
+import { PerfiladoCejas } from "./component/cejas";
+import { MasajesDescontracturantes } from "./component/masajes";
+import { Reductores } from "./component/reductores";
+import { Cuponeras } from "./component/cuponeras";
+import { Calendario } from "./component/calendario";
+import { AdminReservas } from "./component/adminReservas";
 
-
-
-
-
-//create your first component
 const Layout = () => {
-    //the basename is used when your project is published in a subdirectory and not in the root of the domain
-    // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
     const basename = process.env.BASENAME || "";
 
-    if(!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL/ >;
+    if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
 
     return (
         <div>
@@ -38,19 +32,20 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<Home />} path="/" />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<Depilaser />} path="/depiLaser" />
-                        <Route element={<PerfiladoPestanas />} path="/pestanas" />
-                        <Route element={<Hifu />} path="/hifu" />
-                        <Route element={<Criolipolisis />} path="/criolipolisis" />
-                        <Route element={<PerfiladoCejas />} path="/cejas" />
-                        <Route element={<MasajesDescontracturantes />} path="/masajes" />
-                        <Route element={<Reductores />} path="/reductores" />
-                        <Route element={<Cuponeras />} path="/cuponeras" />      
-                        <Route element={<Calendario />} path="/calendario" />
-                        <Route element={<h1>Not found!</h1>} />
+                        <Route path="/" element={<Home />} />
+                        <Route path="/demo" element={<Demo />} />
+                        <Route path="/single/:theid" element={<Single />} />
+                        <Route path="/depiLaser" element={<Depilaser />} />
+                        <Route path="/pestanas" element={<PerfiladoPestanas />} />
+                        <Route path="/hifu" element={<Hifu />} />
+                        <Route path="/criolipolisis" element={<Criolipolisis />} />
+                        <Route path="/cejas" element={<PerfiladoCejas />} />
+                        <Route path="/masajes" element={<MasajesDescontracturantes />} />
+                        <Route path="/reductores" element={<Reductores />} />
+                        <Route path="/cuponeras" element={<Cuponeras />} />
+                        <Route path="/calendario" element={<Calendario />} />
+                        <Route path="/adminReservas" element={<AdminReservas />} />
+                        <Route path="*" element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
                 </ScrollToTop>

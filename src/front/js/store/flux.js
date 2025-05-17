@@ -1,6 +1,4 @@
 const getState = ({ getStore, getActions, setStore }) => {
-    const getToken = () => localStorage.getItem("access_token");
-
     return {
         store: {
             message: null,
@@ -17,12 +15,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             getReservations: async () => {
                 try {
-                    const token = getToken();
                     const response = await fetch(process.env.BACKEND_URL + "/reservas", {
                         method: "GET",
                         headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Bearer " + token
+                            "Content-Type": "application/json"
                         }
                     });
                     if (response.ok) {
@@ -41,12 +37,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             deleteReservation: async (id) => {
                 try {
-                    const token = getToken();
                     const response = await fetch(process.env.BACKEND_URL + "/reservas", {
                         method: "DELETE",
                         headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Bearer " + token
+                            "Content-Type": "application/json"
                         },
                         body: JSON.stringify({ reserva_id: id })
                     });
@@ -65,12 +59,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             submitReservations: async (selectedReservations) => {
                 try {
-                    const token = getToken();
                     const response = await fetch(process.env.BACKEND_URL + "/reservas", {
                         method: "POST",
                         headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Bearer " + token
+                            "Content-Type": "application/json"
                         },
                         body: JSON.stringify(selectedReservations)
                     });
