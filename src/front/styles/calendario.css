@@ -101,3 +101,9 @@
   border-radius: 10px !important;
   padding: 0.5rem 1.5rem !important;
 }
+.dia-pasado {
+  background-color: #e0e0e0 !important;
+  color: #888 !important;
+  pointer-events: none;
+  border-radius: 10px;
+}

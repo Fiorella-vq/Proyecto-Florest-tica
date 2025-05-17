@@ -12,16 +12,19 @@ import os
 api = Blueprint('api', __name__)
 CORS(api, supports_credentials=True)
 
+#Token generado.
 def generate_token(length=32):
     chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for _ in range(length))
 
+# Enviar email utilizando SMTP.
 def enviar_email_smtp(email_destino, asunto, mensaje):
-    smtp_host = os.getenv('SMTP_HOST', 'smtp.gmail.com')
-    smtp_port = int(os.getenv('SMTP_PORT', 587))
-    smtp_user = os.getenv('SMTP_USERNAME')
-    smtp_pass = os.getenv('SMTP_PASSWORD')
-    sender = os.getenv('ADMIN_EMAIL', smtp_user)
+    smtp_user = os.getenv("SMTP_USERNAME")
+    smtp_pass = os.getenv("SMTP_PASSWORD")
+    smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.getenv("SMTP_PORT", 587))
+
+    sender = smtp_user
 
     msg = MIMEMultipart()
     msg['From'] = sender
@@ -35,51 +38,44 @@ def enviar_email_smtp(email_destino, asunto, mensaje):
         server.login(smtp_user, smtp_pass)
         server.sendmail(sender, email_destino, msg.as_string())
         server.quit()
+        print(f"[SMTP] Correo enviado correctamente a {email_destino}")
         return True, "Correo enviado"
     except Exception as e:
+        print(f"[SMTP] Error enviando correo: {e}")
         return False, str(e)
 
-@api.route("/reservas", methods=["POST"])
+# Ruta para crear una reserva
+@api.route('/reservas', methods=['POST'])
 def crear_reserva():
     data = request.json
-    if not data:
-        return jsonify({'error': 'No se recibió JSON válido'}), 400
 
-    fecha_str = data.get('fecha')
-    hora = data.get('hora')
-    email = data.get('email')
-    nombre = data.get('nombre')
-    telefono = data.get('telefono')
-    servicio = data.get('servicio', 'Servicio')
-
-    if not (fecha_str and hora and email and nombre and telefono):
-        return jsonify({'error': 'Faltan datos obligatorios'}), 400
+    campos_requeridos = ['nombre', 'email', 'telefono', 'fecha', 'hora', 'servicio']
+    if not all(campo in data and data[campo] for campo in campos_requeridos):
+        return jsonify({'error': 'Faltan campos obligatorios'}), 400
 
     try:
-        fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+        fecha = datetime.strptime(data['fecha'], '%Y-%m-%d').date()
     except ValueError:
-        return jsonify({'error': 'Formato de fecha inválido, debe ser YYYY-MM-DD'}), 400
+        return jsonify({'error': 'Formato de fecha inválido. Debe ser YYYY-MM-DD'}), 400
 
-    try:
-        datetime.strptime(hora, '%H:%M')
-    except ValueError:
-        return jsonify({'error': 'Formato de hora inválido, debe ser HH:MM'}), 400
+    hora = data['hora']
+    if not isinstance(hora, str) or len(hora) < 4:
+        return jsonify({'error': 'Hora inválida'}), 400
 
-    reserva_existente = Reserva.query.filter_by(fecha=fecha, hora=hora, email=email, cancelada=False).first()
+    # Verificar si ya existe una reserva en ese día y hora
+    reserva_existente = Reserva.query.filter_by(fecha=fecha, hora=hora, cancelada=False).first()
     if reserva_existente:
-        return jsonify({'error': 'Ya existe una reserva para esa fecha y hora con ese correo'}), 400
+        return jsonify({'error': 'Ya existe una reserva en esa fecha y hora'}), 409
 
     token = generate_token()
-    while Reserva.query.filter_by(token=token).first() is not None:
-        token = generate_token()
 
     nueva_reserva = Reserva(
-        nombre=nombre,
-        telefono=telefono,
-        email=email,
+        nombre=data['nombre'],
+        email=data['email'],
+        telefono=data['telefono'],
         fecha=fecha,
         hora=hora,
-        servicio=servicio,
+        servicio=data['servicio'],
         token=token,
         cancelada=False
     )
@@ -87,12 +83,63 @@ def crear_reserva():
     try:
         db.session.add(nueva_reserva)
         db.session.commit()
+
+        # Email de confirmación
+        asunto = "Confirmación de reserva"
+        mensaje = (
+            f"Hola {nueva_reserva.nombre},\n\n"
+            f"Tu reserva fue confirmada para el servicio '{nueva_reserva.servicio}' para el {nueva_reserva.fecha} a las {nueva_reserva.hora}.\n"
+            f"Si necesitás cancelar, podés hacerlo con este enlace:\n\n"
+            f"{os.getenv('FRONTEND_URL', 'http://localhost:3000')}/cancelar/{token}\n\n"
+            "¡Gracias por tu reserva!"
+        )
+
+        success, info = enviar_email_smtp(nueva_reserva.email, asunto, mensaje)
+        if not success:
+            current_app.logger.error(f"Error enviando correo de confirmación a {nueva_reserva.email}: {info}")
+           
+
+        return jsonify({'message': 'Reserva creada correctamente', 'token': token}), 201
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': f'Error al crear reserva: {str(e)}'}), 500
+        current_app.logger.error(f"Error creando reserva: {str(e)}")
+        return jsonify({'error': 'Error al guardar la reserva'}), 500
 
-    return jsonify({'reserva': {'id': nueva_reserva.id, 'token': nueva_reserva.token}}), 201
+# Ruta para obtener reservas.
+@api.route('/reservas', methods=['GET'])
+def obtener_reservas():
+    fecha_str = request.args.get('fecha')
+    email = request.args.get('email')
 
+    if not fecha_str:
+        return jsonify({'error': 'Debe proporcionar una fecha'}), 400
+
+    try:
+        fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Formato de fecha inválido. Debe ser YYYY-MM-DD'}), 400
+
+    query = Reserva.query.filter_by(fecha=fecha, cancelada=False)
+    if email:
+        query = query.filter(Reserva.email == email)
+
+    reservas = query.all()
+
+    resultado = [{
+        'id': r.id,
+        'nombre': r.nombre,
+        'telefono': r.telefono,
+        'email': r.email,
+        'fecha': r.fecha.isoformat(),
+        'hora': r.hora,
+        'servicio': r.servicio,
+        'token': r.token
+    } for r in reservas]
+
+    return jsonify({'reservas': resultado}), 200
+
+# Ruta para enviar el email.
 @api.route('/enviar-email', methods=['POST'])
 def enviar_email():
     data = request.json
@@ -112,9 +159,15 @@ def enviar_email():
     else:
         current_app.logger.error(f"Error enviando correo: {info}")
         return jsonify({'error': f'Error enviando correo: {info}'}), 500
-
+    
+# Ruta para cancelar una reserva.
 @api.route('/cancelar-reserva/<token>', methods=['POST'])
 def cancelar_reserva(token):
+    if len(token) != 32 or not token.isalnum():
+        return jsonify({'error': 'Token con formato inválido'}), 400
+
+    current_app.logger.info(f"Intentando cancelar reserva con token: {token}")
+
     reserva = Reserva.query.filter_by(token=token, cancelada=False).first()
     if not reserva:
         return jsonify({'error': 'Token inválido o reserva ya cancelada'}), 404
@@ -122,8 +175,15 @@ def cancelar_reserva(token):
     reserva.cancelada = True
     try:
         db.session.commit()
+        current_app.logger.info(f"Reserva {reserva.id} cancelada correctamente.")
+
+        # Enviar email de confirmación de cancelación
+        asunto = "Tu reserva ha sido cancelada"
+        mensaje = f"Hola {reserva.nombre}, tu reserva del {reserva.fecha} a las {reserva.hora} fue cancelada correctamente. Si esto fue un error, por favor contáctanos para más información."
+        enviar_email_smtp(reserva.email, asunto, mensaje)
+
+        return jsonify({'message': 'Reserva cancelada correctamente'}), 200
     except Exception as e:
         db.session.rollback()
+        current_app.logger.error(f"Error cancelando reserva: {str(e)}")
         return jsonify({'error': f'Error cancelando reserva: {str(e)}'}), 500
-
-    return jsonify({'message': 'Reserva cancelada correctamente'}), 200
